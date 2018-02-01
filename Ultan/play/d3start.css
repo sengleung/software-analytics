@@ -1,0 +1,47 @@
+/* CSS for d3start.html */ 
+body {
+	background-color: white;
+	color: blue;
+}
+
+/* Apply to both class1 and class2 */
+.class1, .class2 {
+	color: black;
+}
+
+/* Apply to id1 */
+#id1 {
+	font-weight: bold;
+}
+
+/* Apply to element that is both class1 and class2 */
+.class1.class2 {
+	font-style: italic;
+}
+
+/* SVG Element Styling Coding Standard Format (specifying svg at start) */
+svg .myline { 
+	stroke-width: 5;
+}
+
+/* Inheritance 
+An element that is a decendant will inherit the properties of its parent.
+*/
+
+/* Why is it called cascading? 
+Selector matches cascade from the top downC
+e.g. if you have selector p and selector p.highlight then p.highlight
+will overwrite the original styles set by p. So, more specific rules
+overwrite less specific rules */
+
+/* What if two selectors have the same specifity? 
+The latter one will be applied */
+
+/* Chapt. 6 */
+span.bar {
+	display: inline-block;
+	width: 20px; 
+	height: 75px;
+	margin-right: 2px;
+	background-color: teal;
+}
