@@ -38,11 +38,12 @@ var svg = d3.select("svg"),
     width = +svg.attr("width") - margin.left - margin.right,
     height = +svg.attr("height") - margin.top - margin.bottom;
 
-var x = d3.scaleBand().rangeRound([0, width]).padding(0.1),
+var x = d3.scalePoint().range([1, width]).padding(1),
     y = d3.scaleLinear().rangeRound([height, 0]);
 
 var g = svg.append("g")
     .attr("transform", "translate(" + margin.left + "," + margin.top + ")");
+
     
 var div = d3.select("body").append("div")	
     .attr("class", "tooltip")				
@@ -51,18 +52,26 @@ var div = d3.select("body").append("div")
 d3.tsv("data.tsv", function(d) {
   d.hours = +d.hours;
   d.work = +d.work;
+  console.log(d.name);
   return d;
 }, function(error, data) {
   if (error) throw error;
 
-
   x.domain(data.map(function(d) { return d.name; }));
   y.domain([0, d3.max(data, function(d) { return d.hours; })]);
+  
 
   g.append("g")
-      .attr("class", "axis axis--x")
-      .attr("transform", "translate(0," + height + ")")
-      .call(d3.axisBottom(x));
+      .attr("transform", "translate("+ 0 + ","+ height +")")
+      .call(d3.axisBottom(x).tickSize(-height))
+        .attr("text-anchor", "end")
+        .selectAll("text")
+        .classed("x-axis-label", true)
+  			  .style("text-anchor", "end")
+  		    .attr("dx", -8)
+  	      .attr("dy", 8)
+    	    .attr("transform", "translate(0,0) rotate(-45)");
+      
       
         
   g.append("g")
@@ -74,8 +83,6 @@ d3.tsv("data.tsv", function(d) {
       .attr("dy", "0.71em")
       .attr("text-anchor", "end")
       .text("Hours");
-   
-
  
   g.selectAll(".node")
   .data(data)
