@@ -35,8 +35,13 @@ display: none;
 var svg = d3.select("svg"),
     margin = {top: 20, right: 80, bottom: 30, left: 50},
     width = svg.attr("width") - margin.left - margin.right - 50,
-    height = svg.attr("height") - margin.top - margin.bottom,
-    g = svg.append("g").attr("transform", "translate(" + margin.left + "," + margin.top + ")");
+    height = svg.attr("height") - margin.top - margin.bottom;
+
+    svg.append("rect")
+    .attr("width", "100%")
+    .attr("height", "100%")
+    .attr("fill", "#f5f5f1")
+
 
 var parseTime = d3.timeParse("%Y%m");
 
@@ -48,6 +53,8 @@ var line = d3.line()
     //.curve(d3.curveBasis)
     .x(function(d) { return x(d.date); })
     .y(function(d) { return y(d.time); });
+
+var g = svg.append("g").attr("transform", "translate(" + margin.left + "," + margin.top + ")");
 
 // // gridlines in x axis function
 // function make_x_gridlines() {		
