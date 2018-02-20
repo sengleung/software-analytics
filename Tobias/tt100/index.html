@@ -6,7 +6,7 @@ div.tooltip {
     position: absolute;			
     text-align: center;			
     width: 130px;					
-    height: 28px;					
+    height: 42px;					
     padding: 2px;				
     font: 12px sans-serif;		
     background: lightsteelblue;	
@@ -106,7 +106,7 @@ d3.csv("data.csv", function(d) {
         div.transition()		
             .duration(200)		
             .style("opacity", .9);		
-        div.html("Name: "+d.name+"\nProject: "+d.project)	
+        div.html("Name: "+d.name+"</br>"+"Project: "+d.project+"</br>"+"Hours: "+d.hours)	
             .style("left", (d3.event.pageX) + "px")		
             .style("top", (d3.event.pageY - 28) + "px");	
     })
