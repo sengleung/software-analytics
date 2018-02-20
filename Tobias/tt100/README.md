@@ -1,1 +1,0 @@
-Folder containing test values and initial tt100 graph
