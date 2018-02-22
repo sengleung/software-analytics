@@ -5,8 +5,23 @@
 	<meta charset="UTF-8">
 
 	<script type="text/javascript" src="../play/d3/d3.js"></script>
-	<script rel="stylesheet" src="main.css"></script>
+	<link rel="stylesheet" href="main.css"></link>
+	<style type="text/css">
+		#tooltip.hidden {
+			display: none;
+		}
+	</style>
 	<body>
+		<div id="graph">
+		</div>
+		<div id="tooltip" class="hidden">
+			<p><span>Commit Details</span></p>
+			<p id="newWork"></p>
+			<p id="legacyRefactor"><span></span></p>
+			<p id="helpOthers"><span></span></p>
+			<p id="churn"><span></span></p>
+			<p id="message"><span></span></p>
+		</div>
 	</body>
 	
 	<script type="text/javascript" src="main.js"></script>

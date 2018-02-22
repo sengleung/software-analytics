@@ -32,7 +32,8 @@ var converter = function(d) {
 		size: parseInt(d.size),
 		type: d.type,
 		date: d.date,
-		user: d.user
+		user: d.user,
+		category: d.category
 	};
 }
 
@@ -57,19 +58,17 @@ function parse() {
 		currentDate = dataset[i].date;	
 		if(currentDate == previousDate) {
 			makeNodes(dataset[i], day);
-			//datasetDay.push(dataset[i]);
 			count++;
 		} else {
 			// draw the current day
 			makeEdges(count, day);
 			makeGraph(day);
-			//graph();
 			vertSlot++;
 			// reset for going to the next day 
 			previousDate = currentDate;
-			//datasetDay.push(dataset[i]);
 			count = 0;
 			day++;
+			i--;
 		}
 	}
 }
@@ -144,43 +143,43 @@ function makeGraph(day) {
 	var h = 100;
 	switch(day) {
 		case 1: 
-			svg1 = d3.select("body").append("svg"); 
+			svg1 = d3.select("#graph").append("svg"); 
 			svg1.attr("width", w);
 			svg1.attr("height", h);
 			graph(day1, edges1, svg1);
 			break;
 		case 2: 
-			svg2 = d3.select("body").append("svg"); 
+			svg2 = d3.select("#graph").append("svg"); 
 			svg2.attr("width", w);
 			svg2.attr("height", h);
 			graph(day2, edges2, svg2);
 			break;
 		case 3: 
-			svg3 = d3.select("body").append("svg"); 
+			svg3 = d3.select("#graph").append("svg"); 
 			svg3.attr("width", w);
 			svg3.attr("height", h);
 			graph(day3, edges3, svg3);
 			break;
 		case 4: 
-			svg4 = d3.select("body").append("svg"); 
+			svg4 = d3.select("#graph").append("svg"); 
 			svg4.attr("width", w);
 			svg4.attr("height", h);
 			graph(day4, edges4, svg4);
 			break;
 		case 5:  
-			svg5 = d3.select("body").append("svg"); 
+			svg5 = d3.select("#graph").append("svg"); 
 			svg5.attr("width", w);
 			svg5.attr("height", h);
 			graph(day5, edges5, svg5);
 			break;
 		case 6: 
-			svg6 = d3.select("body").append("svg"); 
+			svg6 = d3.select("#graph").append("svg"); 
 			svg6.attr("width", w);
 			svg6.attr("height", h);
 			graph(day6, edges6, svg6);
 			break;
 		case 7: 
-			svg7 = d3.select("body").append("svg"); 
+			svg7 = d3.select("#graph").append("svg"); 
 			svg7.attr("width", w);
 			svg7.attr("height", h);
 			graph(day7, edges7, svg7);
@@ -228,7 +227,15 @@ function graph(datasetDay, edges, svg) {
 			.call(d3.drag()
 				.on("start", dragStarted)
 				.on("drag", dragging)
-				.on("end", dragEnded));
+				.on("end", dragEnded))
+			.on("mouseover", function(d) {
+					d3.select("#tooltip").classed("hidden", false);
+					//d3.select("#tooltip"),select("#newWork").text(dataset.
+					d3.select("#tooltip").select("p#newWork").text(d.category);
+				})
+			.on("mouseout", function() {
+					d3.select("#tooltip").classed("hidden", true);
+				});
 
 	force.on("tick", function() 
 			{
