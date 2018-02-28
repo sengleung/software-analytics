@@ -182,43 +182,50 @@ function makeGraph(day) {
 	var h = 100;
 	switch(day) {
 		case 1: 
-			svg1 = d3.select("#graph").append("svg"); 
+			d3.select("#graph").append("div").html("<div id='day1' class='two columns'></div>");
+			svg1 = d3.select("#day1").append("svg"); 
 			svg1.attr("width", w);
 			svg1.attr("height", h);
 			graph(day1, edges1, svg1);
 			break;
 		case 2: 
-			svg2 = d3.select("#graph").append("svg"); 
+			d3.select("#graph").append("div").html("<div id='day2' class='two columns'></div>");
+			svg2 = d3.select("#day2").append("svg"); 
 			svg2.attr("width", w);
 			svg2.attr("height", h);
 			graph(day2, edges2, svg2);
 			break;
 		case 3: 
-			svg3 = d3.select("#graph").append("svg"); 
+			d3.select("#graph").append("div").html("<div id='day3' class='two columns'></div>");
+			svg3 = d3.select("#day3").append("svg"); 
 			svg3.attr("width", w);
 			svg3.attr("height", h);
 			graph(day3, edges3, svg3);
 			break;
 		case 4: 
-			svg4 = d3.select("#graph").append("svg"); 
+			d3.select("#graph").append("div").html("<div id='day4' class='two columns'></div>");
+			svg4 = d3.select("#day4").append("svg"); 
 			svg4.attr("width", w);
 			svg4.attr("height", h);
 			graph(day4, edges4, svg4);
 			break;
 		case 5:  
-			svg5 = d3.select("#graph").append("svg"); 
+			d3.select("#graph").append("div").html("<div id='day5' class='two columns'></div>");
+			svg5 = d3.select("#day5").append("svg"); 
 			svg5.attr("width", w);
 			svg5.attr("height", h);
 			graph(day5, edges5, svg5);
 			break;
 		case 6: 
-			svg6 = d3.select("#graph").append("svg"); 
+			d3.select("#graph").append("div").html("<div id='day6' class='two columns'></div>");
+			svg6 = d3.select("#day6").append("svg"); 
 			svg6.attr("width", w);
 			svg6.attr("height", h);
 			graph(day6, edges6, svg6);
 			break;
 		case 7: 
-			svg7 = d3.select("#graph").append("svg"); 
+			d3.select("#graph").append("div").html("<div id='day7' class='two columns'></div>");
+			svg7 = d3.select("#day7").append("svg"); 
 			svg7.attr("width", w);
 			svg7.attr("height", h);
 			graph(day7, edges7, svg7);
@@ -229,6 +236,9 @@ function makeGraph(day) {
 function graph(datasetDay, edges, svg) {
 	console.log(datasetDay);	
 	console.log(edges);	
+
+	//d3.select("svg").append("div")
+	//	.html("<div class='one column'></div>");
 	var force = d3.forceSimulation(datasetDay)
 			.force("force", d3.forceManyBody())
 			.force("link", d3.forceLink(edges))
@@ -246,7 +256,7 @@ function graph(datasetDay, edges, svg) {
 				function(d) {
 					return d.size; 
 				})])
-			.range([5, 15]);
+			.range([5, 20]);
 	var nodes = svg.selectAll("circle")
 			.data(datasetDay)
 			.enter()
@@ -269,11 +279,16 @@ function graph(datasetDay, edges, svg) {
 				.on("end", dragEnded))
 			.on("mouseover", function(d) {
 					d3.select("#tooltip").classed("hidden", false);
-					//d3.select("#tooltip"),select("#newWork").text(dataset.
-					d3.select("#tooltip").select("p#newWork").text(d.category);
+					d3.select("#footer").classed("hidden", false);
+					d3.select("#tooltip").select("td#name").transition().text(d.name);
+					d3.select("#tooltip").select("td#size").transition().text(d.size);
+					d3.select("#tooltip").select("td#type").transition().text(d.type);
+					d3.select("#tooltip").select("td#date").transition().text(d.date);
+					d3.select("#tooltip").select("td#user").transition().text(d.user);
+					d3.select("#tooltip").select("td#category").transition().text(d.category);
 				})
 			.on("mouseout", function() {
-					d3.select("#tooltip").classed("hidden", true);
+					//d3.select("#tooltip").classed("hidden", true);
 				});
 
 	force.on("tick", function() 
