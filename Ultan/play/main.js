@@ -37,16 +37,55 @@ var converter = function(d) {
 	};
 }
 
-d3.csv("data.csv", converter, function(error, data) {
+var source = "data.csv";
+madness();
+function madness() {
+d3.csv(source, converter, function(error, data) {
 	if(error) {
 		console.log("bummer");
 	}
 	else {
 		dataset = data;
 		parse();
+		update();
 	}
-});
+}); }
 
+function update() {
+	d3.select("#update")
+		.on("click", function() {
+				day1 = [];
+				day2 = [];
+				day3 = [];
+				day4 = [];
+				day5 = [];
+				day6 = [];
+				day7 = [];
+				edges1 = [];
+				edges2 = [];
+				edges3 = [];
+				edges4 = [];
+				edges5 = [];
+				edges6 = [];
+				edges7 = [];
+					d3.selectAll("svg").remove().transition();
+				svg1;
+				svg2;
+				svg3;
+				svg3;
+				svg4;
+				svg5;
+				svg6;
+				svg7;
+			if(source == "data.csv") {
+				source = "data1.csv";
+				madness();
+			} else {
+				source = "data.csv";
+				madness();
+			}
+		});
+}
 function parse() {
 	
 	var currentDate = dataset[0].date;
