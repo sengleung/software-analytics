@@ -77,10 +77,12 @@ function update() {
 				svg5;
 				svg6;
 				svg7;
-			if(source == "data.csv") {
+			var selection = document.getElementById("selecteduser");
+			var selected = selection.options[selection.selectedIndex].value;
+			if(selected ==  "opt1") {
 				source = "data1.csv";
 				madness();
-			} else {
+			} else if(selected == "opt2") {
 				source = "data.csv";
 				madness();
 			}
