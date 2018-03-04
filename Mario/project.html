@@ -66,7 +66,7 @@ function make_y_gridlines() {
         .ticks(5)
 }
 
-d3.csv("http://localhost:80/Mario/data", type, function(error, data) {
+d3.csv("data.txt", type, function(error, data) {
   if (error) throw error;
 
   var employees1 = data.columns.slice(1,3).map(function(id) {
