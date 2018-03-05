@@ -1,123 +1,140 @@
 <!DOCTYPE html>
 <meta charset="utf-8">
 <style>
-
-div.tooltip {	
-    position: absolute;			
-    text-align: center;			
-    width: 130px;					
-    height: 42px;					
-    padding: 2px;				
-    font: 12px sans-serif;		
-    background: lightsteelblue;	
-    border: 0px;		
-    border-radius: 8px;			
-    pointer-events: none;			
-}
-
-
-.circle {
-  fill: steelblue;
-}
-
-.circle:hover {
-  fill: brown;
-}
-
-.axis--x path {
-  display: none;
-}
-
+  div.tooltip {
+    position: absolute;
+    text-align: center;
+    width: 130px;
+    height: 42px;
+    padding: 2px;
+    font: 12px sans-serif;
+    background: lightsteelblue;
+    border: 0px;
+    border-radius: 8px;
+    pointer-events: none;
+  }
+  
+  .circle {
+    fill: steelblue;
+  }
+  
+  .circle:hover {
+    fill: brown;
+  }
+  
+  .axis--x path {
+    display: none;
+  }
 </style>
 <svg width="960" height="500"></svg>
 <script src="https://d3js.org/d3.v4.min.js"></script>
 <script>
-var svg = d3.select("svg"),
-    margin = {top: 20, right: 20, bottom: 50, left: 40},
+  var svg = d3.select("svg"),
+    margin = {
+      top: 20,
+      right: 20,
+      bottom: 50,
+      left: 40
+    },
     width = +svg.attr("width") - margin.left - margin.right,
     height = +svg.attr("height") - margin.top - margin.bottom;
-    
-svg.append("rect")
-  .attr("width", "100%")
-  .attr("height", "100%")
-  .attr("fill", "#f5f5f1")
-  .attr("rx", "15")
-  .attr("ry", "15")
 
-var x = d3.scalePoint().range([1, width]).padding(1),
+  svg.append("rect")
+    .attr("width", "100%")
+    .attr("height", "100%")
+    .attr("fill", "#f4f5f1")
+    .attr("rx", "15")
+    .attr("ry", "15")
+    .style("stroke", "#d7d7d6")
+
+  var x = d3.scalePoint().range([1, width]).padding(1),
     y = d3.scaleLinear().rangeRound([height, 0]);
 
-var g = svg.append("g")
+  var g = svg.append("g")
     .attr("transform", "translate(" + margin.left + "," + margin.top + ")");
 
-    
-var div = d3.select("body").append("div")	
-    .attr("class", "tooltip")				
+
+  var div = d3.select("body").append("div")
+    .attr("class", "tooltip")
     .style("opacity", 0);
 
-d3.csv("data.csv", function(d) {
-  d.hours = +d.hours;
-  d.work = +d.work;
-  return d;
-}, function(error, data) {
-  if (error) throw error;
-
-  x.domain(data.map(function(d) { return d.name; }));
-  y.domain([0, d3.max(data, function(d) { return d.hours; })]);
-  
-
-  g.append("g")
-      .attr("transform", "translate("+ 0 + ","+ height +")")
-      .call(d3.axisBottom(x)/*.tickSize(-height)*/)
-        .attr("text-anchor", "end")
-        .selectAll("text")
-        .classed("x-axis-label", true)
-  			  .style("text-anchor", "end")
-  		    .attr("dx", -8)
-  	      .attr("dy", 8)
-    	    .attr("transform", "translate(0,0) rotate(-45)");
-        
-  g.append("g")
-      .attr("class", "axis axis--y")
-      .call(d3.axisLeft(y).tickSize(-width))
-    .append("text")
-      .attr("transform", "rotate(-90)")
-      .attr("y", 6)
-      .attr("dy", "0.71em")
-      .attr("text-anchor", "end")
-      .text("Hours");
+  var xAxis = d3.axisBottom(x)
+    .ticks(d3.timeYear);
     
-  d3.selectAll('g.tick')
-  .filter(function(d){ return x;} )
-  .select('line') 
-  .style("stroke-dasharray", ("3, 3")); 
- 
-  g.selectAll(".node")
-  .data(data)
-  .enter().append("circle")
-    .attr("class", "circle")
-    .attr("cx", function(d) {return (x(d.name)+(x.bandwidth()/2));})
-    .attr("cy", function(d){return y(d.hours);})
-    .attr("r", function(d){return (d.work)})
-    .style("fill-opacity", 0.5)
-    .style("stroke", "blue") 
-    .on("mouseover", function(d) 
-    {		
-        div.transition()		
-            .duration(200)		
-            .style("opacity", .9);		
-        div.html("Name: "+d.name+"</br>"+"Project: "+d.project+"</br>"+"Hours: "+d.hours)	
-            .style("left", (d3.event.pageX) + "px")		
-            .style("top", (d3.event.pageY - 28) + "px");	
-    })
-    .on("mouseout", function(d){
-      div.transition()
-      .duration(500)
-      .style("opacity", 0);
-    })
+  var yAxis = d3.axisRight(y)
+    .tickSize(width);
+
+
+  d3.csv("data.csv", function(d) {
+    d.hours = +d.hours;
+    d.work = +d.work;
+    return d;
+  }, function(error, data) {
+    if (error) throw error;
+
+    x.domain(data.map(function(d) {
+      return d.name;
+    }));
+    y.domain([0, d3.max(data, function(d) {
+      return d.hours;
+    })]);
+
+
+    g.append("g")
+      .attr("transform", "translate(" + 0 + "," + height + ")")
+      .call(customXAxis);
+      
+    g.append("g")
+    .call(customYAxis);
+
+    g.selectAll(".node")
+      .data(data)
+      .enter().append("circle")
+      .attr("class", "circle")
+      .attr("cx", function(d) {
+        return (x(d.name) + (x.bandwidth() / 2));
+      })
+      .attr("cy", function(d) {
+        return y(d.hours);
+      })
+      .attr("r", function(d) {
+        return (d.work)
+      })
+      .style("fill-opacity", 0.5)
+      .style("stroke", "blue")
+      .on("mouseover", function(d) {
+        div.transition()
+          .duration(200)
+          .style("opacity", .9);
+        div.html("Name: " + d.name + "</br>" + "Project: " + d.project + "</br>" + "Hours: " + d.hours)
+          .style("left", (d3.event.pageX) + "px")
+          .style("top", (d3.event.pageY - 28) + "px");
+      })
+      .on("mouseout", function(d) {
+        div.transition()
+          .duration(500)
+          .style("opacity", 0);
+      })
+
+    function customXAxis(g) {
+      g.call(xAxis);
+      g.select(".domain").remove();
+      g.selectAll("text").classed("x-axis-label", true)
+      .style("test-anchor", "end")
+      .attr("dx", -15)
+      .attr("dy", 10)
+      .attr("transform", "translate(0,0) rotate(-45)");
+    }
     
+    function customYAxis(g) {
+      g.call(yAxis);
+      g.select(".domain").remove();
+      g.selectAll(".tick:not(:first-of-type) line").attr("stroke", "#777").attr("stroke-dasharray", "2,2");
+      g.selectAll(".tick text").attr("x", -20)
 
-  
-});
+      ;
+      
+    }
 
+  });
 </script>
