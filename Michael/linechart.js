@@ -2,7 +2,7 @@
 Scalability of graph
 beautify the graph
 The text label needs to flip once it reaches a certain x-position
-text labels at the end of the string?
+text labels at the end of the curve?
 colour under the curve?
 I need to have titles on the graph
 change the background colour of the graph
@@ -31,7 +31,8 @@ var xScale;
 var svg = d3.select("body")
     .append("svg")
     .attr("width", width)
-    .attr("height", height);
+    .attr("height", height)
+    .style("background-color", "rgba(0xff,0x8c,0x1a, 0.5)");
 d3.csv("data.csv", function (data) {
     var columns = Object.keys(data[0]);
     var list = [];
@@ -182,6 +183,7 @@ function onCanvas() {
     x = x > axis_width ? axis_width : x;
     var R = 10;
     var r = 5;
+    var y = R + 10;
     if (bool) {
         //Drawing the dotted line
         d3.select(this)
@@ -212,16 +214,16 @@ function onCanvas() {
             .attr("r", r)
             .attr("fill", "white");
 
-
         //Drawing the textbox
         var textbox = svg.append("g");
         textbox.attr("transform", "translate(" +
                 (x + R) +
                 "," + (d3.select("#outer-circle").attr("cy") - R - 10) + ")")
             .attr("id", "textbox");
-        var y = R + 10;
+        y = R + 10;
 
         textbox.append("polygon")
+            .attr("id", "polygon")
             .attr("points", ((y) * 0.75) + "," + (y / 2) + " " + (y) * 0.75 + "," + y * 1.5 + " " + 0 + "," + y)
             .style("fill", "gray");
 
@@ -276,6 +278,19 @@ function onCanvas() {
             });
         d3.select("#text-rect")
             .attr("width", textWidth + 5);
+
+        //invert textbox once it has reachead a certain position
+        console.log(y);
+        y = -Math.abs(y);
+        // d3.select("#polygon")
+        //     .attr("points", ((y) * 0.75) + "," + (y / 2) + " " + (y) * 0.75 + "," + y * 1.5 + " " + 0 + "," + y)
+
+        //I could employ a completely new textbox when that occurs
+        //I could reposition the "g" and perfom the transformations accordingly
+        //note if done that way then I have to position the components at the end of the g
+        //instead of the start
+        //I need to re-remember what position is the end of the graph
+        //
 
     }
 }
