@@ -22,9 +22,7 @@
     fill: brown;
   }
   
-  .axis--x path {
-    display: none;
-  }
+  
 </style>
 <svg width="960" height="500"></svg>
 <script src="https://d3js.org/d3.v4.min.js"></script>
@@ -53,17 +51,14 @@
   var g = svg.append("g")
     .attr("transform", "translate(" + margin.left + "," + margin.top + ")");
 
-
   var div = d3.select("body").append("div")
     .attr("class", "tooltip")
     .style("opacity", 0);
 
-  var xAxis = d3.axisBottom(x)
-    .ticks(d3.timeYear);
-    
+  var xAxis = d3.axisBottom(x);
+
   var yAxis = d3.axisRight(y)
     .tickSize(width);
-
 
   d3.csv("data.csv", function(d) {
     d.hours = +d.hours;
@@ -118,22 +113,21 @@
 
     function customXAxis(g) {
       g.call(xAxis);
+      g.select(".domain").attr("stroke", "#b4b5b3");
       g.select(".domain").remove();
       g.selectAll("text").classed("x-axis-label", true)
       .style("test-anchor", "end")
       .attr("dx", -15)
       .attr("dy", 10)
       .attr("transform", "translate(0,0) rotate(-45)");
+      g.selectAll("tick").attr("stroke", "#b4b5b3");
     }
     
     function customYAxis(g) {
       g.call(yAxis);
       g.select(".domain").remove();
-      g.selectAll(".tick:not(:first-of-type) line").attr("stroke", "#777").attr("stroke-dasharray", "2,2");
-      g.selectAll(".tick text").attr("x", -20)
-
-      ;
-      
+      g.selectAll(".tick:not(:first-of-type) line").attr("stroke", "#b4b5b3").attr("stroke-dasharray", "2,2");
+      g.selectAll(".tick text").attr("x", -20);
     }
 
   });
