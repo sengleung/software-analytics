@@ -61,13 +61,33 @@ var line = d3.line()
 .x(function(d) { return x(d.date); })
 .y(function(d) { return y(d.time); });
 
-var div = d3.select("body").append("div") 
-.attr("class", "tooltip")       
-.style("opacity", 0);
+// var div = d3.select("body").append("div") 
+// .attr("class", "tooltip")       
+// .style("opacity", 0);
+
+function getRandomColor() {
+  var letters = '0123456789ABCDEF';
+  var color = '#';
+  for (var i = 0; i < 6; i++) {
+    color += letters[Math.floor(Math.random() * 16)];
+  }
+  return color;
+}
 
 
 var g = svg.append("g").attr("transform", "translate(" + margin.left + "," + margin.top + ")");
- var colors = ['red', 'red', 'blue', 'blue', 'yellow', 'yellow'];
+ // var colors = ['red', 'red', 'blue', 'blue', 'yellow', 'yellow'];
+
+ var colors = [];
+ for(var i = 0; i < 50; i++)
+ {
+  var xx = getRandomColor();
+  colors.push(xx);
+  colors.push(xx);
+ }
+
+
+
 
 // gridlines in y axis function
 function make_y_gridlines() {   
