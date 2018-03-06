@@ -1,38 +1,55 @@
 /* Todo List: 
-Scalability of graph
-beautify the graph
-The text label needs to flip once it reaches a certain x-position
-text labels at the end of the curve?
-colour under the curve?
-I need to have titles on the graph
-change the background colour of the graph
-Change the fonts to something better
-Add text labels to the graph
+1.1)Fix the font sizes of the tags and the width of the graph
+2) beautify the graph
+3) text labels at the end of the curve?
+4) colour under the curve?
+5) I need to have titles on the graph
+6) change the background colour of the graph
+7_ Change the fonts to something better
 Submit to Git
-Finish maths assignment
 */
 function scaleWidth(percentage) {
-    return percentage * window.outerWidth;
+    return percentage * document.documentElement.clientWidth;
 }
 
 function scaleHeight(percentage) {
-    return percentage * window.outerHeight;
+    return percentage * document.documentElement.clientHeight;
 }
 
 var parser = d3.timeParse("%Y-%m-%d");
-var height = scaleHeight(0.77);
-var width = scaleWidth(0.75);
+var height = scaleHeight(0.8);
+var width = scaleWidth(1);
 
 var axis_width;
 
 var origin = 30;
 var y_axis_height = height - origin;
+var backgroundColor = "rgba(255,140,26, 0.5)";
 var xScale;
+
+ d3.select("body").style("margin-top", "0px")
+    .style("margin-left", "0px")
+    .style("margin-right", "0px")
+    .style("margin-bottom", "0px");
+
+
+var title = d3.select("body")
+    .append("div")
+    .text("Team focus over Time")
+    .style("background-color", backgroundColor)
+    .style("font-family", "Avantgarde, TeX Gyre Adventor, URW Gothic L, sans-serif")
+    .style("font-size", "2em")
+    .style("text-align", "center");
+
+title.style("position", "relative")
+    .style("height", scaleHeight(0.12) + "px");
+
 var svg = d3.select("body")
     .append("svg")
     .attr("width", width)
     .attr("height", height)
-    .style("background-color", "rgba(0xff,0x8c,0x1a, 0.5)");
+    .style("background-color", backgroundColor);
+
 d3.csv("data.csv", function (data) {
     var columns = Object.keys(data[0]);
     var list = [];
@@ -48,7 +65,7 @@ d3.csv("data.csv", function (data) {
 
     for (i = 1; i < columns.length; i++) {
         list.push(
-            data.map(function (d) {
+            data.map((d) => {
                 return +d[columns[i]];
             }));
     }
@@ -58,7 +75,7 @@ d3.csv("data.csv", function (data) {
         yMax = yMax > d3.max(list[i]) ? yMax : d3.max(list[i]);
     }
 
-    var x_axis_width = scaleWidth(0.75) - origin;
+    var x_axis_width = scaleWidth(1) - origin;
 
 
     xScale = d3.scaleTime()
@@ -72,7 +89,7 @@ d3.csv("data.csv", function (data) {
         .range([y_axis_height, origin]);
 
     var x_axis = d3.axisBottom()
-        .scale(xScale).ticks(20);
+        .scale(xScale).ticks(5);
 
     var y_axis = d3.axisLeft()
         .scale(yScale).ticks(5);
@@ -135,7 +152,10 @@ d3.csv("data.csv", function (data) {
             .style("opacity", 0)
             .style("stroke-width", stroke_width)
             .on("mouseover." + columns[i], handleMouseOver)
-            .on("mouseout", handleMouseOut);
+            .on("mouseout", handleMouseOut)
+            .on("touchenter." + columns[i], yeet)
+            .on("touchleave", yeet);
+            
 
         svg.append("path")
             .data([data])
@@ -153,12 +173,18 @@ d3.csv("data.csv", function (data) {
             .style("fill", colors[(i - 1) % colors.length])
             .style("font-size", "23px")
             .style("background-color", "red");
-        svg.on("mousemove", onCanvas);
+        svg.on("mousemove", onCanvas)
+            .on("touchmove", onCanvas);
+    }
+
+    function yeet() {
+        console.log("yeet");
     }
 
     function handleMouseOver(d) {
         var x = d3.mouse(this)[0];
         var y = d3.mouse(this)[1];
+
         d3.select("#" + this.__on[0].name)
             .style("stroke-width", stroke_width)
             .style("opacity", 1)
@@ -204,15 +230,9 @@ function onCanvas() {
             .attr("cx", x)
             .attr("cy", origin - R)
             .attr("r", R)
-            .attr("fill", "gray");
-
-        d3.select(this)
-            .append("circle")
-            .attr("id", "inner-circle")
-            .attr("cx", x)
-            .attr("cy", d3.select("#outer-circle").attr("cy"))
-            .attr("r", r)
-            .attr("fill", "white");
+            .attr("fill", "none")
+            .attr("stroke", "gray")
+            .attr("stroke-width", 5);
 
         //Drawing the textbox
         var textbox = svg.append("g");
@@ -225,7 +245,8 @@ function onCanvas() {
         textbox.append("polygon")
             .attr("id", "polygon")
             .attr("points", ((y) * 0.75) + "," + (y / 2) + " " + (y) * 0.75 + "," + y * 1.5 + " " + 0 + "," + y)
-            .style("fill", "gray");
+            .style("fill", "gray")
+            .attr("width", y);
 
         textbox.append("rect")
             .attr("id", "text-rect")
@@ -242,7 +263,7 @@ function onCanvas() {
             .attr("x", y)
             .attr("y", R * 2)
             .attr("dy", ".35em")
-            .text("hello")
+            .text("")
             .style("fill", "red");
         bool = false;
     } else {
@@ -253,16 +274,15 @@ function onCanvas() {
         //Moving the outer circle
         d3.select("#outer-circle")
             .attr("cx", x);
-        //moving the inner circle
-        d3.select("#inner-circle")
-            .attr("cx", x);
 
         //move the textbox
         d3.select("#textbox")
             .attr("transform", "translate(" +
                 (x + R) +
                 "," +
-                (d3.select("#outer-circle").attr("cy") - R - 10) + ")");
+                (d3.select("#outer-circle").attr("cy") - R - 10) + ")")
+            .attr("xPos", (x + R))
+            .attr("yPos", (d3.select("#outer-circle").attr("cy") - R - 10));
         //update the text
         var days = ["Mon", "Tues", "Wed", "Thurs", "Fri", "Sat", "Sun"];
         var month = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'June', 'July', 'Aug', 'Sept', 'Oct', 'Nov', 'Dec'];
@@ -270,27 +290,36 @@ function onCanvas() {
         var string = days[date.getDay()] + " " + month[date.getMonth()] + " " + date.getDate() + " " + date.getFullYear();
         d3.select("#textbox-text")
             .text(string);
+
         //update size of text-box
-        var textWidth;
+        var textWidth = 5;
         d3.select("#textbox-text")
             .each(function (d, i) {
                 textWidth = this.getComputedTextLength();
             });
         d3.select("#text-rect")
-            .attr("width", textWidth + 5);
-
+            .attr("width", textWidth + 10);
         //invert textbox once it has reachead a certain position
-        console.log(y);
-        y = -Math.abs(y);
-        // d3.select("#polygon")
-        //     .attr("points", ((y) * 0.75) + "," + (y / 2) + " " + (y) * 0.75 + "," + y * 1.5 + " " + 0 + "," + y)
+        var graph_width = axis_width - textWidth;
+        var xPos = +d3.select("#textbox").attr("xPos");
 
-        //I could employ a completely new textbox when that occurs
-        //I could reposition the "g" and perfom the transformations accordingly
-        //note if done that way then I have to position the components at the end of the g
-        //instead of the start
-        //I need to re-remember what position is the end of the graph
-        //
-
+        if (xPos > graph_width) {
+            var yPos = +d3.select("#textbox").attr("yPos");
+            xPos = d3.select("#outer-circle").attr("cx");
+            xPos -= +d3.select("#polygon").attr("width");
+            xPos -= +d3.select("#text-rect").attr("width");
+            xPos -= +d3.select("#outer-circle").attr("r") * 2;
+            d3.select("#textbox").attr("transform", "translate(" + xPos + "," + yPos + ")");
+            var boxWidth = +d3.select("#polygon").attr("width");
+            boxWidth += +d3.select("#text-rect").attr("width");
+            boxWidth += +d3.select("#outer-circle").attr("r") + 1;
+            d3.select("#polygon").attr("points",
+                (boxWidth - (y * 0.75)) + "," + (y / 2) + " " +
+                (boxWidth - (y * 0.75)) + "," + (y * 1.5) + " " +
+                (boxWidth) + "," + y);
+        } else {
+            d3.select("#polygon")
+                .attr("points", ((y) * 0.75) + "," + (y / 2) + " " + (y) * 0.75 + "," + y * 1.5 + " " + 0 + "," + y);
+        }
     }
 }
