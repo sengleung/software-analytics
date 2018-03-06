@@ -5,7 +5,7 @@
 4) colour under the curve?
 5) I need to have titles on the graph
 6) change the background colour of the graph
-7_ Change the fonts to something better
+8) add functionality that will enable and disable parts of the graph
 Submit to Git
 */
 function scaleWidth(percentage) {
@@ -18,7 +18,7 @@ function scaleHeight(percentage) {
 
 var parser = d3.timeParse("%Y-%m-%d");
 var height = scaleHeight(0.8);
-var width = scaleWidth(1);
+var width = scaleWidth(0.9);
 
 var axis_width;
 
@@ -27,7 +27,7 @@ var y_axis_height = height - origin;
 var backgroundColor = "rgba(255,140,26, 0.5)";
 var xScale;
 
- d3.select("body").style("margin-top", "0px")
+d3.select("body").style("margin-top", "0px")
     .style("margin-left", "0px")
     .style("margin-right", "0px")
     .style("margin-bottom", "0px");
@@ -140,7 +140,7 @@ d3.csv("data.csv", function (data) {
                 }
             });
         };
-        var stroke_width = 10;
+        var stroke_width = 1;
 
         svg.append("path")
             .data([data])
@@ -150,12 +150,12 @@ d3.csv("data.csv", function (data) {
             .style("fill", "none")
             .style("stroke", colors[(i - 1) % colors.length])
             .style("opacity", 0)
-            .style("stroke-width", stroke_width)
+            .style("stroke-width", 3 * stroke_width)
             .on("mouseover." + columns[i], handleMouseOver)
             .on("mouseout", handleMouseOut)
             .on("touchenter." + columns[i], yeet)
             .on("touchleave", yeet);
-            
+
 
         svg.append("path")
             .data([data])
@@ -163,7 +163,7 @@ d3.csv("data.csv", function (data) {
             .style("shape-rendering", "geometric-precision")
             .style("fill", "none")
             .style("stroke", colors[(i - 1) % colors.length])
-            .style("stroke-width", 1);
+            .style("stroke-width", stroke_width);
 
         svg.append("text")
             .attr("x", 4 + xScale(list[0][list[0].length - 1]))
@@ -186,7 +186,7 @@ d3.csv("data.csv", function (data) {
         var y = d3.mouse(this)[1];
 
         d3.select("#" + this.__on[0].name)
-            .style("stroke-width", stroke_width)
+            .style("stroke-width", 3 * stroke_width)
             .style("opacity", 1)
             .moveToFront();
         d3.select("#" + this.__on[0].name + "text")
