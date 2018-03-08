@@ -21,8 +21,6 @@
   .circle:hover {
     fill: brown;
   }
-  
-  
 </style>
 <svg width="960" height="500"></svg>
 <script src="https://d3js.org/d3.v4.min.js"></script>
@@ -60,75 +58,86 @@
   var yAxis = d3.axisRight(y)
     .tickSize(width);
 
+
+  var i = 0;
   d3.csv("data.csv", function(d) {
-    d.hours = +d.hours;
-    d.work = +d.work;
-    return d;
-  }, function(error, data) {
-    if (error) throw error;
+      return d;
+    },
+    function(error, data) {
 
-    x.domain(data.map(function(d) {
-      return d.name;
-    }));
-    y.domain([0, d3.max(data, function(d) {
-      return d.hours;
-    })]);
+      var ratio = 0;
+      data.forEach(function(d) {
+        d.hours = +d.hours;
+        d.work = +d.work
+        if (d.work > ratio) ratio = d.work;
+      });
 
-
-    g.append("g")
-      .attr("transform", "translate(" + 0 + "," + height + ")")
-      .call(customXAxis);
-      
-    g.append("g")
-    .call(customYAxis);
-
-    g.selectAll(".node")
-      .data(data)
-      .enter().append("circle")
-      .attr("class", "circle")
-      .attr("cx", function(d) {
-        return (x(d.name) + (x.bandwidth() / 2));
-      })
-      .attr("cy", function(d) {
-        return y(d.hours);
-      })
-      .attr("r", function(d) {
-        return (d.work)
-      })
-      .style("fill-opacity", 0.5)
-      .style("stroke", "blue")
-      .on("mouseover", function(d) {
-        div.transition()
-          .duration(200)
-          .style("opacity", .9);
-        div.html("Name: " + d.name + "</br>" + "Project: " + d.project + "</br>" + "Hours: " + d.hours)
-          .style("left", (d3.event.pageX) + "px")
-          .style("top", (d3.event.pageY - 28) + "px");
-      })
-      .on("mouseout", function(d) {
-        div.transition()
-          .duration(500)
-          .style("opacity", 0);
+      ratio /= 70;
+      data.forEach(function(d) {
+        d.work = d.work / ratio;
       })
 
-    function customXAxis(g) {
-      g.call(xAxis);
-      g.select(".domain").attr("stroke", "#b4b5b3");
-      g.select(".domain").remove();
-      g.selectAll("text").classed("x-axis-label", true)
-      .style("test-anchor", "end")
-      .attr("dx", -15)
-      .attr("dy", 10)
-      .attr("transform", "translate(0,0) rotate(-45)");
-      g.selectAll("tick").attr("stroke", "#b4b5b3");
-    }
-    
-    function customYAxis(g) {
-      g.call(yAxis);
-      g.select(".domain").remove();
-      g.selectAll(".tick:not(:first-of-type) line").attr("stroke", "#b4b5b3").attr("stroke-dasharray", "2,2");
-      g.selectAll(".tick text").attr("x", -20);
-    }
+      if (error) throw error;
+      x.domain(data.map(function(d) {
+        return d.name;
+      }));
+      y.domain([0, d3.max(data, function(d) {
+        return d.hours;
+      })]);
+      g.append("g")
+        .attr("transform", "translate(" + 0 + "," + height + ")")
+        .call(customXAxis);
 
-  });
+      g.append("g")
+        .call(customYAxis);
+
+      g.selectAll(".node")
+        .data(data)
+        .enter().append("circle")
+        .attr("class", "circle")
+        .attr("cx", function(d) {
+          return (x(d.name) + (x.bandwidth() / 2));
+        })
+        .attr("cy", function(d) {
+          return y(d.hours);
+        })
+        .attr("r", function(data) {
+          return (data.work)
+        })
+        .style("fill-opacity", 0.5)
+        .style("stroke", "blue")
+        .on("mouseover", function(d) {
+          div.transition()
+            .duration(200)
+            .style("opacity", .9);
+          div.html("Name: " + d.name + "</br>" + "Project: " + d.project + "</br>" + "Hours: " + d.hours)
+            .style("left", (d3.event.pageX) + "px")
+            .style("top", (d3.event.pageY - 28) + "px");
+        })
+        .on("mouseout", function(d) {
+          div.transition()
+            .duration(500)
+            .style("opacity", 0);
+        })
+
+      function customXAxis(g) {
+        g.call(xAxis);
+        g.select(".domain").attr("stroke", "#b4b5b3");
+        g.select(".domain").remove();
+        g.selectAll("text").classed("x-axis-label", true)
+          .style("test-anchor", "end")
+          .attr("dx", -15)
+          .attr("dy", 10)
+          .attr("transform", "translate(0,0) rotate(-45)");
+        g.selectAll("tick").attr("stroke", "#b4b5b3");
+      }
+
+      function customYAxis(g) {
+        g.call(yAxis);
+        g.select(".domain").remove();
+        g.selectAll(".tick:not(:first-of-type) line").attr("stroke", "#b4b5b3").attr("stroke-dasharray", "2,2");
+        g.selectAll(".tick text").attr("x", -20);
+      }
+
+    });
 </script>
