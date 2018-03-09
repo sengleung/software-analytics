@@ -19,9 +19,3 @@ print("date," + ",".join(chr(97 + i) for i in range(cols - 1)), file=f)
 
 print(",".join(str(i) for i in csv_list).replace("]", "\n").replace(",[", "").replace("[", "").replace("'", ""),end="",file=f)
 f.close()
-
-# I need to need to then figure out how to have a time axis (D3JS)
-# I then need to figure out how to have tags on each of the labels
-# I need to figure out how to colour underneath the graph
-# submit to Git
-# custom designed axes

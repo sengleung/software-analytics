@@ -5,7 +5,10 @@
 4) colour under the curve?
 5) I need to have titles on the graph
 6) change the background colour of the graph
-8) add functionality that will enable and disable parts of the graph
+8) add functionality that will enable and disable certain graphs
+8.1) Have it work with how I highlight part of the graph when I hover over it
+9)
+9) Be able to zoom in to the graph
 Submit to Git
 */
 function scaleWidth(percentage) {
@@ -18,7 +21,7 @@ function scaleHeight(percentage) {
 
 var parser = d3.timeParse("%Y-%m-%d");
 var height = scaleHeight(0.8);
-var width = scaleWidth(0.9);
+var width = scaleWidth(1);
 
 var axis_width;
 
@@ -160,6 +163,7 @@ d3.csv("data.csv", function (data) {
         svg.append("path")
             .data([data])
             .attr("d", valueLine)
+            .attr("id", columns[i] + "0")
             .style("shape-rendering", "geometric-precision")
             .style("fill", "none")
             .style("stroke", colors[(i - 1) % colors.length])
@@ -172,13 +176,25 @@ d3.csv("data.csv", function (data) {
             .text(columns[i])
             .style("fill", colors[(i - 1) % colors.length])
             .style("font-size", "23px")
-            .style("background-color", "red");
+            .style("background-color", "red")
+            .on("click." + columns[i], setOpacity);
         svg.on("mousemove", onCanvas)
             .on("touchmove", onCanvas);
     }
 
     function yeet() {
         console.log("yeet");
+    }
+
+    function setOpacity() {
+        var opacity = +d3.select("#" + this.__on[0].name + "0").style("opacity");
+        if (opacity == 0) {
+            d3.select("#" + this.__on[0].name + "0").style("opacity", 1);
+            d3.select("#" + this.__on[0].name).style("opacity", 1);
+        } else {
+            d3.select("#" + this.__on[0].name + "0").style("opacity", 0);
+            d3.select("#" + this.__on[0].name).style("opacity", 0); 
+        }
     }
 
     function handleMouseOver(d) {
