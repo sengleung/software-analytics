@@ -4,8 +4,8 @@
 * _Every succesive list corresponds to the values on the y-axis_
 
                         For Example
-                Date, list0, list1, list2,
-                list3.....
+                Date, team 1, team 2, team 3,
+                team 4.....
 
                 2018-03-03, 126, 42, 51, 57
                 2018-03-04, 112, 53, 19, 138
