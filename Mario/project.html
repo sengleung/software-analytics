@@ -128,7 +128,7 @@ function make_y_gridlines() {
 }
 
 
-d3.csv("data.csv", function(error, data) {
+d3.csv("https://www.scss.tcd.ie/Stephen.Barrett/webhooks/software-analytics/cot.php", function(error, data) {
   if (error) throw error;
 
   z.domain(d3.keys(data[0]).filter(function(key) { return key !== "date"; }));
