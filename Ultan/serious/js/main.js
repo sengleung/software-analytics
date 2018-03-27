@@ -1,4 +1,4 @@
-var source = "data/data.csv";
+var source = "https://www.scss.tcd.ie/Stephen.Barrett/webhooks/software-analytics/tp.php"; // client dummy data
 
 var vertSlot = 1; 
 var day1 = [];
@@ -69,10 +69,10 @@ function update() {
 			var selection = document.getElementById("selecteduser");
 			var selected = selection.options[selection.selectedIndex].value;
 			if(selected ==  "opt2") {
-				source = "data/data1.csv";
+				source = "data/data1.csv"; // local dummy data
 				load();
 			}else if(selected == "opt1") {
-				source = "data/data.csv";
+				source = "https://www.scss.tcd.ie/Stephen.Barrett/webhooks/software-analytics/tp.php";
 				load();
 			}
 		});
