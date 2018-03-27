@@ -140,4 +140,11 @@
       }
 
     });
+
+  function fixData(txtFile) {
+    var txtData = txtFile.split('\n');
+    txtData.splice(0,1);
+    
+    return txtData.join('n');
+  }
 </script>
