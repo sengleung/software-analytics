@@ -1,3 +1,5 @@
+/* Author: @ullly Ultan O Morain, Student No. 15315653 */
+
 var source = "https://www.scss.tcd.ie/Stephen.Barrett/webhooks/software-analytics/tp.php"; // client dummy data
 
 var vertSlot = 1; 

@@ -1,4 +1,4 @@
-Visualisation Ultan
+Author: @ullly Ultan O Morain, Student No. 15315653 
 
 The CSV contains commit data for a user.
 
