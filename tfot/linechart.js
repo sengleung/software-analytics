@@ -95,7 +95,7 @@ d3.selection.prototype.moveToBack = function () {
     });
 };
 
-d3.csv("data.csv", function (error, data) {
+d3.csv("https://www.scss.tcd.ie/Stephen.Barrett/webhooks/software-analytics/tfot.php", function (error, data) {
     if (error)
         throw error;
     //Generating an object array that contains the values of each team and their respective dates
