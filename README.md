@@ -13,10 +13,10 @@ Developed with the [D3.js](https://d3js.org/) library.
 
 [@Mariog75](https://github.com/Mariog75) Mariusz Grebelski
 
-## Team Focus over Time
+## Team Focus Over Time
 
 [@FrontRowWithJ](https://github.com/FrontRowWithJ) Michael Adebusuyi
 
-## Team Progress
+## Engineer Contribution
 
 [@ullly](https://github.com/ullly) Ultan Ó Móráin
