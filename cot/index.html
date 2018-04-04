@@ -1,277 +1,284 @@
-<!DOCTYPE html>
+  <!DOCTYPE html>
 
-<head>
-  <meta charset="utf-8" />
-  <script data-require="d3@4.0.0" data-semver="4.0.0" src="https://d3js.org/d3.v4.min.js"></script>
-  <style>
-
-    .axis--x path {
-      display: none;
-    }
-
-    .axis--y path {
-      display: none;
-    }
-
-    .line {
-      fill: none;
-      stroke-width: 1.5px;
-    }
-
-    .grid line {
-      stroke: lightgrey;
-      stroke-opacity: 0.7;
-      shape-rendering: crispEdges;
-    }
-
-    .grid path {
-      stroke-width: 0;
-    }
-
-
-
-
-
-
-  </style>
-</head>
-
-<body>
-  <svg width="1280" height="500"></svg>
-  <script type="text/javascript" src="d3.min.js"></script>
-  <script>
-
-
-    var svg = d3.select("svg"),
-    margin = {top: 20, right: 260, bottom: 110, left: 60},
-    margin2 = {top: 430, right: 120, bottom: 30, left: 40},
-    width = +svg.attr("width") - margin.left - margin.right,
-    height = +svg.attr("height") - margin.top - margin.bottom,
-    height2 = +svg.attr("height") - margin2.top - margin2.bottom;
-
-
-    svg.append("rect")
-    .attr("width", "100%")
-    .attr("height", "100%")
-    .attr("fill", "#f5f5f1")
-
-    var parseTime = d3.timeParse("%Y%m");
-
-    var x = d3.scaleTime().range([0, width]),
-    x2 = d3.scaleTime().range([0, width]),
-    y = d3.scaleLinear().range([height, 0]),
-    y2 = d3.scaleLinear().range([height2, 0]),
-    z = d3.scaleOrdinal(d3.schemeCategory10);
-
-    var xAxis = d3.axisBottom(x),
-    xAxis2 = d3.axisBottom(x2),
-    yAxis = d3.axisLeft(y);
-
-    var brush = d3.brushX()
-    .extent([[0, 0], [width, height2]])
-    .on("brush end", brushed);
-
-
-    var line = d3.line()
-    .x(function (d) { return x(new Date(d.date)); })
-    .y(function (d) { return y(d.hours); });
-
-    var line2 = d3.line()
-    .x(function (d) { return x2(new Date(d.date)); })
-    .y(function (d) { return y2(d.hours); })
-
-    var clip = svg.append("defs").append("svg:clipPath")
-    .attr("id", "clip")
-    .append("svg:rect")
-    .attr("width", width)
-    .attr("height", height)
-    .attr("x", 0)
-    .attr("y", 0); 
-
-
-    var focus = svg.append("g")
-    .attr("class", "focus")
-    .attr("transform", "translate(" + margin.left + "," + margin.top + ")");
-
-    var context = svg.append("g")
-    .attr("class", "context")
-    .attr("transform", "translate(" + margin2.left + "," + margin2.top + ")");
-
-
-
-    function getRandomColor() {
-      var letters = '0123456789ABCDEF';
-      var color = '#';
-      for (var i = 0; i < 6; i++) {
-        color += letters[Math.floor(Math.random() * 16)];
+  <head>
+    <meta charset="utf-8" />
+    <script data-require="d3@4.0.0" data-semver="4.0.0" src="https://d3js.org/d3.v4.min.js"></script>
+    <style>
+    
+      .axis--x path {
+        display: none;
       }
-      return color;
-    }
 
+      .axis--y path {
+        display: none;
+      }
 
+      .line {
+        fill: none;
+        stroke-width: 1.5px;
+      }
 
-    var colors = [];
-    for(var i = 0; i < 50; i++)
-    {
-      var xx = getRandomColor();
-      colors.push(xx);
-      colors.push(xx);
-    }
+      .grid line {
+        stroke: lightgrey;
+        stroke-opacity: 0.7;
+        shape-rendering: crispEdges;
+      }
 
-
-
-
-// gridlines in y axis function
-function make_y_gridlines() {   
-  return d3.axisLeft(y)
-  .ticks(5)
-}
-
-
-d3.csv("https://www.scss.tcd.ie/Stephen.Barrett/webhooks/software-analytics/cot.php", function(error, data) {
-  if (error) throw error;
-
-  z.domain(d3.keys(data[0]).filter(function(key) { return key !== "date"; }));
-
-  data.forEach(function(d) {
-    d.date = parseTime(d.date);
-  });
-
-  var employees = z.domain().map(function(id) {
-    return {
-      id: id,
-      values: data.map(function(d) {
-        return {date: d.date, hours: +d[id]};
-      })
-    };
-  });
-
-
-  var o1 = 0;
-  var o2 = 0;
-  var o3 = 0;
-
-  x.domain(d3.extent(data, function(d) { return d.date; }));
-
-  y.domain([
-    0,
-    d3.max(employees, function(c) { return (d3.max(c.values, function(d) { return d.hours; }))+2; })
-    ]);
-  x2.domain(x.domain());
-  y2.domain(y.domain());
-  z.domain(employees.map(function(c) { return c.id; }));
+      .grid path {
+        stroke-width: 0;
+      }
 
 
 
 
-  var focuslineGroups = focus.selectAll("g")
-  .data(employees)
-  .enter().append("g");
-
-  var focuslines = focuslineGroups.append("path")
-  .attr("class","line")
-  .attr("d", function(d) { return line(d.values); })
-  .style("stroke", function(d) {return colors[o1++]})
-  .attr("clip-path", "url(#clip)");
-
-  focuslineGroups.append("text")
-  .datum(function(d) { return {id: d.id, value: d.values[d.values.length - 1]}; })
-  .attr("transform", function(d) { return "translate(" + x(d.value.date) + "," + y(d.value.hours) + ")"; })
-  .attr("x", (width - (width/4)))
-  .attr("dy", "20")
-  .style("font", "10px sans-serif")
-  .text(function(d) { return d.id; })
 
 
-  focus.append("g")     
-  .attr("class", "grid")
-  .call(make_y_gridlines()
-    .tickSize(-width)
-    .tickFormat("")
-    )
+    </style>
+  </head>
 
-  focus.append("g")
-  .attr("class", "axis axis--x")
-  .attr("transform", "translate(0," + height + ")")
-  .call(xAxis);
-
-  focus.append("g")
-  .attr("class", "axis axis--y")
-  .call(yAxis)
-  .append("text")
-  .attr("transform", "rotate(-90)")
-  .attr("y", -45)
-  .attr("dy", "0.71em")
-  .attr("fill", "#000")
-  .text("HOURS TO PRODUCE 100 LINES OF CODE (PRODUCTIVE VS RAW)");
-
-  focus.append("text")
-  .attr("x", (width / 5))             
-  .attr("y", 0 - (margin.top / 16)+5)
-  .attr("text-anchor", "middle")  
-  .style("font-size", "24px")   
-  .text("Churn Over Time");
-
-  var contextlineGroups = context.selectAll("g")
-  .data(employees)
-  .enter().append("g");
-
-  var contextLines = contextlineGroups.append("path")
-  .attr("class", "line")
-  .attr("d", function(d) { return line2(d.values); })
-  .style("stroke", function(d) {return colors[o2++]})
-  .attr("clip-path", "url(#clip)");
+  <body>
+    <svg width="1280" height="500"></svg>
+    <script type="text/javascript" src="d3.min.js"></script>
+    <script>
 
 
-  context.append("g")
-  .attr("class", "axis axis--x")
-  .attr("transform", "translate(0," + height2 + ")")
-  .call(xAxis2);
+      var svg = d3.select("svg"),
+      margin = {top: 20, right: 260, bottom: 110, left: 60},
+      margin2 = {top: 430, right: 120, bottom: 30, left: 40},
+      width = +svg.attr("width") - margin.left - margin.right,
+      height = +svg.attr("height") - margin.top - margin.bottom,
+      height2 = +svg.attr("height") - margin2.top - margin2.bottom;
 
-  context.append("g")
-  .attr("class", "brush")
-  .call(brush)
-  .call(brush.move, x.range());
 
-      var legend = svg.selectAll('.g')
-        .data(employees)
-        .enter()
-      .append('g')
-        .attr('class', 'legend');
+      svg.append("rect")
+      .attr("width", "100%")
+      .attr("height", "100%")
+      .attr("fill", "#f5f5f1")
+
+      var parseTime = d3.timeParse("%Y%m");
+
+      //set scales
+      var x = d3.scaleTime().range([0, width]),
+      x2 = d3.scaleTime().range([0, width]),
+      y = d3.scaleLinear().range([height, 0]),
+      y2 = d3.scaleLinear().range([height2, 0]),
+      z = d3.scaleOrdinal(d3.schemeCategory10);
+
+      //set axes
+      var xAxis = d3.axisBottom(x),
+      xAxis2 = d3.axisBottom(x2),
+      yAxis = d3.axisLeft(y);
+
+      //calls brushed function
+      var brush = d3.brushX()
+      .extent([[0, 0], [width, height2]])
+      .on("brush end", brushed);
+
+      //defines lines
+      var line = d3.line()
+      .x(function (d) { return x(new Date(d.date)); })
+      .y(function (d) { return y(d.hours); });
+
+      var line2 = d3.line()
+      .x(function (d) { return x2(new Date(d.date)); })
+      .y(function (d) { return y2(d.hours); })
+
+      //used to focus graph
+      var clip = svg.append("defs").append("svg:clipPath")
+      .attr("id", "clip")
+      .append("svg:rect")
+      .attr("width", width)
+      .attr("height", height)
+      .attr("x", 0)
+      .attr("y", 0); 
+
+      //defines 2 graphs spaces
+      var focus = svg.append("g")
+      .attr("class", "focus")
+      .attr("transform", "translate(" + margin.left + "," + margin.top + ")");
+
+      var context = svg.append("g")
+      .attr("class", "context")
+      .attr("transform", "translate(" + margin2.left + "," + margin2.top + ")");
+
+
+      //random color generator function
+      function getRandomColor() {
+        var letters = '0123456789ABCDEF';
+        var color = '#';
+        for (var i = 0; i < 6; i++) {
+          color += letters[Math.floor(Math.random() * 16)];
+        }
+        return color;
+      }
+
+
+      //generates random colors (set at 50)
+      var colors = [];
+      for(var i = 0; i < 50; i++)
+      {
+        var xx = getRandomColor();
+        colors.push(xx);
+        colors.push(xx);
+      }
+
+
+
+
+  // gridlines in y axis function
+  function make_y_gridlines() {   
+    return d3.axisLeft(y)
+    .ticks(5)
+  }
+
+  // gets and formats data (makes get request)
+  d3.csv("https://www.scss.tcd.ie/Stephen.Barrett/webhooks/software-analytics/cot.php", function(error, data) {
+    if (error) throw error;
+
+    z.domain(d3.keys(data[0]).filter(function(key) { return key !== "date"; }));
+
+    data.forEach(function(d) {
+      d.date = parseTime(d.date);
+    });
+
+    var employees = z.domain().map(function(id) {
+      return {
+        id: id,
+        values: data.map(function(d) {
+          return {date: d.date, hours: +d[id]};
+        })
+      };
+    });
+
+    //used for colors indexing
+    var o1 = 0;
+    var o2 = 0;
+    var o3 = 0;
+
+    //sets domains
+    x.domain(d3.extent(data, function(d) { return d.date; }));
+
+    y.domain([
+      0,
+      d3.max(employees, function(c) { return (d3.max(c.values, function(d) { return d.hours; }))+2; })
+      ]);
+    x2.domain(x.domain());
+    y2.domain(y.domain());
+    z.domain(employees.map(function(c) { return c.id; }));
+
+
+
+    //generates focus graph (main graph)
+    var focuslineGroups = focus.selectAll("g")
+    .data(employees)
+    .enter().append("g");
+
+    var focuslines = focuslineGroups.append("path")
+    .attr("class","line")
+    .attr("d", function(d) { return line(d.values); })
+    .style("stroke", function(d) {return colors[o1++]})
+    .attr("clip-path", "url(#clip)");
+
+    focuslineGroups.append("text")
+    .datum(function(d) { return {id: d.id, value: d.values[d.values.length - 1]}; })
+    .attr("transform", function(d) { return "translate(" + x(d.value.date) + "," + y(d.value.hours) + ")"; })
+    .attr("x", (width - (width/4)))
+    .attr("dy", "20")
+    .style("font", "10px sans-serif")
+    .text(function(d) { return d.id; })
+
+
+    focus.append("g")     
+    .attr("class", "grid")
+    .call(make_y_gridlines()
+      .tickSize(-width)
+      .tickFormat("")
+      )
+
+    focus.append("g")
+    .attr("class", "axis axis--x")
+    .attr("transform", "translate(0," + height + ")")
+    .call(xAxis);
+
+    focus.append("g")
+    .attr("class", "axis axis--y")
+    .call(yAxis)
+    .append("text")
+    .attr("transform", "rotate(-90)")
+    .attr("y", -45)
+    .attr("dy", "0.71em")
+    .attr("fill", "#000")
+    .text("HOURS TO PRODUCE 100 LINES OF CODE (PRODUCTIVE VS RAW)");
+
+    focus.append("text")
+    .attr("x", (width / 5))             
+    .attr("y", 0 - (margin.top / 16)+5)
+    .attr("text-anchor", "middle")  
+    .style("font-size", "24px")   
+    .text("Churn Over Time");
+
+    //generates context graph (bottom graph)
+    var contextlineGroups = context.selectAll("g")
+    .data(employees)
+    .enter().append("g");
+
+    var contextLines = contextlineGroups.append("path")
+    .attr("class", "line")
+    .attr("d", function(d) { return line2(d.values); })
+    .style("stroke", function(d) {return colors[o2++]})
+    .attr("clip-path", "url(#clip)");
+
+
+    context.append("g")
+    .attr("class", "axis axis--x")
+    .attr("transform", "translate(0," + height2 + ")")
+    .call(xAxis2);
+
+    context.append("g")
+    .attr("class", "brush")
+    .call(brush)
+    .call(brush.move, x.range());
+
+    //generates legend 
+    var legend = svg.selectAll('.g')
+    .data(employees)
+    .enter()
+    .append('g')
+    .attr('class', 'legend');
 
     legend.append('rect')
-        .attr('x', 1020)
-        .attr('y', function(d, i){ return (i *  20)+5})
-        .attr('width', 10)
-        .attr('height', 10)
-        .style('fill', function(d) { 
-          return colors[o3++];
-        });
+    .attr('x', 1020)
+    .attr('y', function(d, i){ return (i *  20)+5})
+    .attr('width', 10)
+    .attr('height', 10)
+    .style('fill', function(d) { 
+    return colors[o3++];
+    });
 
     legend.append('text')
-        .attr('x', 1035)
-        .attr('y', function(d, i){ return (i *  20) + 15;})
-        .text(function(d){ return d.id; });
+    .attr('x', 1035)
+    .attr('y', function(d, i){ return (i *  20) + 15;})
+    .text(function(d){ return d.id; });
 
 
 
-});
+  });
+
+
+  //defined brush function
+  function brushed() {
+    var s = d3.event.selection;
+    x.domain(s.map(x2.invert, x2));
+    focus.selectAll("path.line").attr("d",  function(d) {return line(d.values)});
+    focus.select(".axis--x").call(xAxis);
+    focus.select(".axis--y").call(yAxis);
+  }
 
 
 
-function brushed() {
-  var s = d3.event.selection;
-  x.domain(s.map(x2.invert, x2));
-  focus.selectAll("path.line").attr("d",  function(d) {return line(d.values)});
-  focus.select(".axis--x").call(xAxis);
-  focus.select(".axis--y").call(yAxis);
-}
 
 
+  </script>
+  </body>
 
-
-
-</script>
-</body>
-
-</html>
+  </html>
